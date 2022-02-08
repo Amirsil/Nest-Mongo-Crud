@@ -4,7 +4,6 @@ import { Crud } from 'nestjs-mongoose-crud';
 import { InjectModel } from 'nestjs-typegoose';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 
-
 @Crud({
     model: Cat
 })

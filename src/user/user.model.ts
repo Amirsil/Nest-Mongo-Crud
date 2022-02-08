@@ -1,9 +1,16 @@
+import { ApiPreconditionFailedResponse, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { prop, Ref } from '@typegoose/typegoose';
-
+import { Cat } from '../cat/cat.model';
 export class User {
   @prop({ required: true })
+  @ApiProperty()
   public name: string;
 
-  // @prop({ required: true, type: Cat })
-  // public cats: Ref<Cat>;
+  @ApiProperty({
+    type: 'array',
+    items: {
+      $ref: getSchemaPath(Cat)
+    }
+  })
+  public cats: Cat[];
 }
