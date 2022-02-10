@@ -60,7 +60,7 @@ export class UserService {
       })));
 
     cats.forEach((cat) => {
-      if (cat.body == null) {
+      if (cat.body === null) {
         throw new ForbiddenException(`A cat named ${cat.name} doesn't exist`);
       }
     });
