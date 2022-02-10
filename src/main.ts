@@ -1,11 +1,15 @@
-import { NestFactory } from '@nestjs/core';
+import { APP_PIPE, HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { ValidationExceptionsFilter } from './utils/validationExceptionsFilter';
 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const httpAdapter = app.get(HttpAdapterHost);
 
+  app.useGlobalFilters(new ValidationExceptionsFilter(httpAdapter))
+  
   const config = new DocumentBuilder()
     .setTitle('CRUD example')
     .setDescription('The API description')
