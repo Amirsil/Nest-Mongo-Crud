@@ -9,9 +9,7 @@ export interface UserDTO {
     cats: Cat[]
 }
 
-
-export async function convertUserToDTO(user: User, catService: CatService): Promise<UserDTO> {
-    const cats = await catService.findByNames(user.catNames);
+function createUserDTO(user: User, cats: Cat[]): UserDTO {
     const populatedUser = {
         ...user,
         cats
@@ -19,3 +17,23 @@ export async function convertUserToDTO(user: User, catService: CatService): Prom
     delete populatedUser.catNames;
     return populatedUser;
 }
+
+const catsCache = {};
+
+export async function convertUserToDTO(user: User, catService: CatService): Promise<UserDTO> {
+    const unCachedCats = user.catNames.filter(name => !catsCache[name]);
+    
+    if (unCachedCats) {
+        (await catService.findByNames(unCachedCats))
+            .forEach(cat => {
+                catsCache[cat.name] = cat;
+            });
+    }
+
+    return createUserDTO(user, user.catNames.map(name => catsCache[name]));
+}
+
+export async function convertUsersToDTO(users: User[], catService: CatService): Promise<UserDTO[]> {
+    return await Promise.all(users.map(user => convertUserToDTO(user, catService)))
+}
+

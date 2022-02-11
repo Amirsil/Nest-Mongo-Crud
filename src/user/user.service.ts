@@ -6,7 +6,7 @@ import { CatService } from 'src/cat/cat.service';
 import { CatsModule } from 'src/cat/cat.module';
 import { ValidationError } from 'class-validator';
 import { Document, QueryWithHelpers } from 'mongoose';
-import { UserDTO, convertUserToDTO } from './user.dto';
+import { UserDTO, convertUserToDTO, convertUsersToDTO } from './user.dto';
 
 @Injectable()
 export class UserService {
@@ -17,8 +17,10 @@ export class UserService {
 
   async findAllAndPopulate(): Promise<UserDTO[] | null> {
     const users = await this.findAll();
-    return await Promise.all(users.map(
-      async (user) => await convertUserToDTO(user, this.catService)));
+    return await convertUsersToDTO(users, this.catService);
+
+    // return await Promise.all(users.map(
+    //   async (user) => await convertUserToDTO(user, this.catService)));
   }
 
   async findAll(): Promise<User[] | null> {
@@ -79,7 +81,7 @@ export class UserService {
 
   private async validateNoDuplicates(name: string) {
     try {
-      console.log(await this.findByName(name))
+      await this.findByName(name)
     } catch (err) {
       return
     }
