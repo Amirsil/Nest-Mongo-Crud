@@ -66,14 +66,7 @@ export class UserService {
   }
 
   async removeCatFromUsers(catName: string) {
-    const targetUsers = (await this.findAll())
-      .filter(({ catNames }) => catNames.includes(catName));
-
-    targetUsers.forEach(async (user) => {
-      user.catNames.splice(user.catNames.indexOf(catName), 1);
-      await this.userModel.updateOne({ name: user.name }, { $set: { catNames: user.catNames } })
-    })
-
+    await this.userModel.updateMany({}, { $pull: { catNames: catName } })
   }
 
   private async validateUserExists(name: string) {
