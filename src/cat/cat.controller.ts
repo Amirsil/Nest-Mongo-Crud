@@ -1,10 +1,8 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, InternalServerErrorException, HttpException, ValidationError, HttpStatus, UseFilters, Res } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters } from "@nestjs/common";
 import { Cat } from "./cat.model";
-import { Crud } from 'nestjs-mongoose-crud';
-import { InjectModel } from 'nestjs-typegoose';
-import { ModelType } from '@typegoose/typegoose/lib/types';
 import { CatService } from "./cat.service";
 import { ValidationExceptionsFilter } from "src/utils/validationExceptionsFilter";
+import { CatDTO } from "./cat.dto";
 
 @Controller('cats')
 export class CatController {
@@ -22,15 +20,15 @@ export class CatController {
 
   @UseFilters(ValidationExceptionsFilter)
   @Post()
-  async create(@Body() cat: Cat) {
-    await this.catService.create(cat);
+  async create(@Body() catDTO: CatDTO) {
+    await this.catService.create(catDTO);
     return 'CREATED';
   }
 
   @UseFilters(ValidationExceptionsFilter)
   @Put(':name')
-  async update(@Param('name') name: string, @Body() newCat: Cat) {
-    await this.catService.updateByName(name, newCat);
+  async update(@Param('name') name: string, @Body() newCatDTO: CatDTO) {
+    await this.catService.updateByName(name, newCatDTO);
     return 'UPDATED';
   }
 

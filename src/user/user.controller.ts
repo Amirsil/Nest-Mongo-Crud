@@ -1,36 +1,34 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, HttpException, HttpStatus, UseFilters, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, UseFilters } from '@nestjs/common';
 import { User } from './user.model';
-import { Crud } from 'nestjs-mongoose-crud';
-import { InjectModel } from 'nestjs-typegoose';
-import { ModelType } from '@typegoose/typegoose/lib/types';
 import { UserService } from './user.service';
 import { ValidationExceptionsFilter } from 'src/utils/validationExceptionsFilter';
 import { UserDTO } from './user.dto';
+
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Get()
-  async getUsers(): Promise<UserDTO[]> {
-    return await this.userService.findAllAndPopulate();
+  async getUsers(): Promise<User[]> {
+    return await this.userService.findAll();
   }
 
   @Get(':name')
-  async getUserByName(@Param('name') name: string): Promise<UserDTO> {
-    return await this.userService.findByNameAndPopulate(name)
+  async getUserByName(@Param('name') name: string): Promise<User> {
+    return await this.userService.findByName(name)
   }
 
   @UseFilters(ValidationExceptionsFilter)
   @Post()
-  async create(@Body() user: User) {
-    await this.userService.create(user);
+  async create(@Body() userDTO: UserDTO) {
+    await this.userService.create(userDTO);
     return 'CREATED';
   }
 
   @UseFilters(ValidationExceptionsFilter)
   @Put(':name')
-  async update(@Param('name') name: string, @Body() newUser: User) {
-    await this.userService.updateByName(name, newUser);
+  async update(@Param('name') name: string, @Body() newUserDTO: UserDTO) {
+    await this.userService.updateByName(name, newUserDTO);
     return 'UPDATED';
   }
 

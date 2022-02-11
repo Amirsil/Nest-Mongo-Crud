@@ -1,15 +1,15 @@
-import { ForbiddenException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { ReturnModelType } from "@typegoose/typegoose";
 import { InjectModel } from "nestjs-typegoose";
 import { Cat } from "src/cat/cat.model";
-import { UserService } from "src/user/user.service";
+import { BaseService } from "src/utils/base.service";
+import { CatDTO } from "./cat.dto";
 
 @Injectable()
-export class CatService {
+export class CatService extends BaseService<Cat, CatDTO> {
   constructor(
-    @InjectModel(Cat) private readonly catModel: ReturnModelType<typeof Cat>,
-    @Inject(forwardRef(() => UserService)) private readonly userService: UserService
-  ) { }
+    @InjectModel(Cat)
+    private readonly catModel: ReturnModelType<typeof Cat>) { super() }
 
   async findAll(): Promise<Cat[] | null> {
     return await (await this.catModel
@@ -20,51 +20,39 @@ export class CatService {
 
   async findByName(name: string): Promise<Cat> {
     const cat = await this.catModel.findOne({ name });
+
     if (!cat) {
-      throw new NotFoundException(`Cat ${name} not found`, name);
+      throw new NotFoundException(`Cat ${name} not found`);
     }
+
     return cat.toJSON();
   }
 
   async findByNames(names: string[]): Promise<Cat[] | null> {
-    return await Promise.all(names.map(
-      (name) => this.findByName(name)));
+    const cats = await this.catModel.find({ name: { $in: names } });
+
+    const catNames = cats.map(({ name }) => name);
+    names.forEach(catName => {
+      if (!catNames.includes(catName)) {
+        throw new NotFoundException(`Cat ${catName} not found`);
+      }
+    })
+
+    return cats;
   }
 
-
-  async create(cat: Cat): Promise<Cat> {
-    await this.validateNoDuplicates(cat.name);
-
-    return await this.catModel.create(cat);
+  async create(catDTO: CatDTO): Promise<Cat> {
+    await super.validateNoDuplicates(catDTO.name);
+    return await this.catModel.create(catDTO);
   }
 
-  async updateByName(name: string, newCat: Cat): Promise<Cat> {
-    await this.validateCatExists(name);
-
-    return await this.catModel.findOneAndUpdate({ name }, newCat);
+  async updateByName(name: string, catDTO: CatDTO): Promise<Cat> {
+    await super.validateExists(name);
+    return await this.catModel.findOneAndUpdate({ name }, catDTO);
   }
 
   async removeByName(name: string): Promise<Cat> {
-    await this.validateCatExists(name);
-    await this.userService.removeCatFromUsers(name);
+    await super.validateExists(name);
     return await this.catModel.findOneAndDelete({ name });
   }
-
-  private async validateCatExists(name: string) {
-    try {
-      await this.findByName(name)
-    } catch(err) {
-      throw new ForbiddenException(`A cat named ${name} doesn't exist`);
-    }
-  }
-
-  private async validateNoDuplicates(name: string) {
-    try {
-      await this.findByName(name)
-    } catch(err) {
-      return
-    }
-    throw new ForbiddenException(`A cat named ${name} already exists`);
-  }
-
 }

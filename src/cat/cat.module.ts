@@ -3,7 +3,6 @@ import { TypegooseModule } from "nestjs-typegoose";
 import { Cat } from "./cat.model";
 import { CatController } from "./cat.controller";
 import { CatService } from "./cat.service";
-import { UserModule } from "src/user/user.module";
 import { UserService } from "src/user/user.service";
 import { User } from "src/user/user.model";
 

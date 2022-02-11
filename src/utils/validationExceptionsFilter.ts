@@ -11,4 +11,3 @@ export class ValidationExceptionsFilter implements ExceptionFilter {
     httpAdapter.reply(ctx.getResponse(), exception.message, HttpStatus.FORBIDDEN)
   }
 }
-

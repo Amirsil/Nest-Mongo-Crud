@@ -1,23 +1,13 @@
-import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { modelOptions, prop } from '@typegoose/typegoose';
+import { modelOptions, prop, Ref } from '@typegoose/typegoose';
+import { Cat } from 'src/cat/cat.model';
 
 
-@modelOptions({
-  schemaOptions: {
-      toJSON: {
-          transform: (doc, ret) => {
-              delete ret.__v;
-              delete ret._id;
-          }
-      }
-  }
-})
 export class User {
+  _id?: string;
+  
   @prop({ required: true, unique: true })
-  @ApiProperty()
-  public name: string;
+  name: string;
 
-  @prop({ default: []})
-  @ApiProperty()
-  public catNames: string[];
+  @prop({ default: [], ref: () => Cat })
+  cats: Ref<Cat>[];
 }
