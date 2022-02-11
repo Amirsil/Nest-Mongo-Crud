@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { modelOptions, prop } from '@typegoose/typegoose';
-import { Cat } from '../cat/cat.model';
-import { IsNotEmpty } from 'class-validator';
+
+
 @modelOptions({
   schemaOptions: {
       toJSON: {
@@ -13,16 +13,11 @@ import { IsNotEmpty } from 'class-validator';
   }
 })
 export class User {
-  @prop({ required: true })
+  @prop({ required: true, unique: true })
   @ApiProperty()
   public name: string;
 
-  @prop({ default: [] })
-  @ApiProperty({
-    type: 'array',
-    items: {
-      $ref: getSchemaPath(Cat)
-    }
-  })
-  public cats: Cat[];
+  @prop({ default: []})
+  @ApiProperty()
+  public catNames: string[];
 }

@@ -6,7 +6,7 @@ import { CatsModule } from './cat/cat.module';
 import { UserModule } from './user/user.module'
 import { ValidationExceptionsFilter } from './utils/validationExceptionsFilter';
 @Module({
-  imports: [TypegooseModule.forRoot('mongodb://192.168.77.150:27017/nest', {
+  imports: [TypegooseModule.forRoot('mongodb://localhost:27017/nest', {
   }),
     CatsModule,
     UserModule

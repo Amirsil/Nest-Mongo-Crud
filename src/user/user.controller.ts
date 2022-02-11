@@ -5,18 +5,19 @@ import { InjectModel } from 'nestjs-typegoose';
 import { ModelType } from '@typegoose/typegoose/lib/types';
 import { UserService } from './user.service';
 import { ValidationExceptionsFilter } from 'src/utils/validationExceptionsFilter';
+import { UserDTO } from './user.dto';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Get()
-  async getUsers(): Promise<User[]> {
-    return await this.userService.findAll();
+  async getUsers(): Promise<UserDTO[]> {
+    return await this.userService.findAllAndPopulate();
   }
 
   @Get(':name')
-  async getUserByName(@Param('name') name: string): Promise<User> {
-    return await this.userService.findByName(name)
+  async getUserByName(@Param('name') name: string): Promise<UserDTO> {
+    return await this.userService.findByNameAndPopulate(name)
   }
 
   @UseFilters(ValidationExceptionsFilter)

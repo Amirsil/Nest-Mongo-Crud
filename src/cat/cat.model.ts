@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { modelOptions, prop } from "@typegoose/typegoose";
-import { IsNotEmpty } from 'class-validator';
+
 @modelOptions({
   schemaOptions: {
       toJSON: {
@@ -12,7 +12,11 @@ import { IsNotEmpty } from 'class-validator';
   }
 })
 export class Cat {
-  @prop({ required: true })
+  @prop({ required: true, unique: true })
   @ApiProperty()
   name: string;
+
+  @prop({ required: true })
+  @ApiProperty()
+  taiLLength: number;
 }
