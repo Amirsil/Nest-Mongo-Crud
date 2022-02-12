@@ -1,9 +1,9 @@
 import { Catch, ArgumentsHost, HttpException, HttpStatus, ExceptionFilter } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
- 
+import { Response } from 'express';
 @Catch()
 export class ValidationExceptionsFilter implements ExceptionFilter {
-  constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
+  constructor(private readonly httpAdapterHost: HttpAdapterHost) { }
 
   catch(exception, host: ArgumentsHost): void {
     const { httpAdapter } = this.httpAdapterHost;
@@ -13,6 +13,12 @@ export class ValidationExceptionsFilter implements ExceptionFilter {
       exception.message = exception.response.message[0];
     }
 
-    httpAdapter.reply(ctx.getResponse(), exception.message, HttpStatus.FORBIDDEN)
+    const responseBody = {
+      statusCode: HttpStatus.FORBIDDEN,
+      message: exception.message,
+      path: httpAdapter.getRequestUrl(ctx.getRequest()),
+    }
+
+    httpAdapter.reply(ctx.getResponse(), responseBody, HttpStatus.FORBIDDEN)
   }
 }
