@@ -2,17 +2,20 @@ import { Controller, Get, Post, Body, Put, Param, Delete, UseFilters } from '@ne
 import { User } from './user.model';
 import { UserService } from './user.service';
 import { ValidationExceptionsFilter } from 'src/utils/validationExceptionsFilter';
-import { UserDTO } from './user.dto';
+import { CreateUserDTO, UserDTO } from './user.dto';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
-
+  
+  @ApiResponse({ type: [UserDTO] })
   @Get()
   async getUsers(): Promise<User[]> {
     return await this.userService.findAll();
   }
 
+  @ApiResponse({ type: UserDTO })
   @Get(':name')
   async getUserByName(@Param('name') name: string): Promise<User> {
     return await this.userService.findByName(name)
@@ -20,15 +23,15 @@ export class UserController {
 
   @UseFilters(ValidationExceptionsFilter)
   @Post()
-  async create(@Body() userDTO: UserDTO) {
-    await this.userService.create(userDTO);
+  async create(@Body() createUserDTO: CreateUserDTO) {
+    await this.userService.create(createUserDTO);
     return 'CREATED';
   }
 
   @UseFilters(ValidationExceptionsFilter)
   @Put(':name')
-  async update(@Param('name') name: string, @Body() newUserDTO: UserDTO) {
-    await this.userService.updateByName(name, newUserDTO);
+  async update(@Param('name') name: string, @Body() newCreateUserDTO: CreateUserDTO) {
+    await this.userService.updateByName(name, newCreateUserDTO);
     return 'UPDATED';
   }
 

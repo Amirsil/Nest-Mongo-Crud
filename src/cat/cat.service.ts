@@ -3,10 +3,10 @@ import { ReturnModelType } from "@typegoose/typegoose";
 import { InjectModel } from "nestjs-typegoose";
 import { Cat } from "src/cat/cat.model";
 import { BaseService } from "src/utils/base.service";
-import { CatDTO } from "./cat.dto";
+import { CreateCatDTO } from "./cat.dto";
 
 @Injectable()
-export class CatService extends BaseService<Cat, CatDTO> {
+export class CatService extends BaseService<Cat, CreateCatDTO> {
   constructor(
     @InjectModel(Cat)
     private readonly catModel: ReturnModelType<typeof Cat>) { super() }
@@ -41,14 +41,14 @@ export class CatService extends BaseService<Cat, CatDTO> {
     return cats;
   }
 
-  async create(catDTO: CatDTO): Promise<Cat> {
-    await super.validateNoDuplicates(catDTO.name);
-    return await this.catModel.create(catDTO);
+  async create(createCatDTO: CreateCatDTO): Promise<Cat> {
+    await super.validateNoDuplicates(createCatDTO.name);
+    return await this.catModel.create(createCatDTO);
   }
 
-  async updateByName(name: string, catDTO: CatDTO): Promise<Cat> {
+  async updateByName(name: string, createCatDTO: CreateCatDTO): Promise<Cat> {
     await super.validateExists(name);
-    return await this.catModel.findOneAndUpdate({ name }, catDTO);
+    return await this.catModel.findOneAndUpdate({ name }, createCatDTO);
   }
 
   async removeByName(name: string): Promise<Cat> {

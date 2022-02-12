@@ -3,12 +3,12 @@ import { InjectModel } from 'nestjs-typegoose';
 import { User } from './user.model';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { CatService } from 'src/cat/cat.service';
-import { UserDTO } from './user.dto';
+import { CreateUserDTO } from './user.dto';
 import { Cat } from 'src/cat/cat.model';
 import { BaseService } from 'src/utils/base.service';
 
 @Injectable()
-export class UserService extends BaseService<User, UserDTO> {
+export class UserService extends BaseService<User, CreateUserDTO> {
   constructor(
     @InjectModel(User) private readonly userModel: ReturnModelType<typeof User>,
     @Inject(forwardRef(() => CatService)) private readonly catService: CatService
@@ -48,17 +48,17 @@ export class UserService extends BaseService<User, UserDTO> {
     return await this.userModel.find({ name: { $in: names } });
   }
 
-  async create(userDTO: UserDTO): Promise<User> {
-    await super.validateNoDuplicates(userDTO.name);
+  async create(createUserDTO: CreateUserDTO): Promise<User> {
+    await super.validateNoDuplicates(createUserDTO.name);
 
-    const user = await this.createUserFromDTO(userDTO);
+    const user = await this.createUserFromDTO(createUserDTO);
     return await this.userModel.create(user);
   }
 
-  async updateByName(name: string, newUserDTO: UserDTO): Promise<User> {
+  async updateByName(name: string, newCreateUserDTO: CreateUserDTO): Promise<User> {
     await super.validateExists(name);
 
-    const newUser = await this.createUserFromDTO(newUserDTO);
+    const newUser = await this.createUserFromDTO(newCreateUserDTO);
     return await this.userModel.findOneAndUpdate({ name }, newUser);
   }
 
@@ -66,10 +66,10 @@ export class UserService extends BaseService<User, UserDTO> {
     return await this.userModel.findOneAndRemove({ name });
   }
 
-  private async createUserFromDTO(userDTO: UserDTO): Promise<User> {
-    const cats = await this.catService.findByNames(userDTO.catNames);
+  private async createUserFromDTO(createUserDTO: CreateUserDTO): Promise<User> {
+    const cats = await this.catService.findByNames(createUserDTO.catNames);
     const user = {
-      name: userDTO.name,
+      name: createUserDTO.name,
       cats: cats.map(({ _id }) => _id)
     }
 

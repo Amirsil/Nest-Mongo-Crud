@@ -2,17 +2,20 @@ import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters, NotFoundEx
 import { Cat } from "./cat.model";
 import { CatService } from "./cat.service";
 import { ValidationExceptionsFilter } from "src/utils/validationExceptionsFilter";
-import { CatDTO } from "./cat.dto";
+import { CatDTO, CreateCatDTO } from "./cat.dto";
+import { ApiResponse } from "@nestjs/swagger";
 
 @Controller('cats')
 export class CatController {
   constructor(private readonly catService: CatService) { }
 
+  @ApiResponse({ type: [CatDTO] })
   @Get()
   async getCats(): Promise<Cat[]> {
     return await this.catService.findAll();
   }
 
+  @ApiResponse({ type: CatDTO })
   @Get(':name')
   async getCatByName(@Param('name') name: string): Promise<Cat> {
     return await this.catService.findByName(name)
@@ -20,15 +23,15 @@ export class CatController {
 
   @UseFilters(ValidationExceptionsFilter)
   @Post()
-  async create(@Body() catDTO: CatDTO) {
-    await this.catService.create(catDTO);
+  async create(@Body() createCatDTO: CreateCatDTO) {
+    await this.catService.create(createCatDTO);
     return 'CREATED';
   }
 
   @UseFilters(ValidationExceptionsFilter)
   @Put(':name')
-  async update(@Param('name') name: string, @Body() newCatDTO: CatDTO) {
-    await this.catService.updateByName(name, newCatDTO);
+  async update(@Param('name') name: string, @Body() newCreateCatDTO: CreateCatDTO) {
+    await this.catService.updateByName(name, newCreateCatDTO);
     return 'UPDATED';
   }
 
@@ -38,6 +41,6 @@ export class CatController {
     await this.catService.removeByName(name);
     return 'DELETED';
   }
-  
-  
+
+
 }
