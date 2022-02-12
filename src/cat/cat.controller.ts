@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters, NotFoundException } from "@nestjs/common";
 import { Cat } from "./cat.model";
 import { CatService } from "./cat.service";
 import { ValidationExceptionsFilter } from "src/utils/validationExceptionsFilter";
