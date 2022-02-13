@@ -3,9 +3,10 @@ import { Cat } from "./cat.model";
 import { CatService } from "./cat.service";
 import { ValidationExceptionsFilter } from "src/utils/validationExceptionsFilter";
 import { CatDTO, CreateCatDTO } from "./cat.dto";
-import { ApiResponse } from "@nestjs/swagger";
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 
+@ApiTags('Cats')
 @Controller('cats')
 export class CatController {
   constructor(private readonly catService: CatService) { }

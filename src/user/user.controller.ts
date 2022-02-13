@@ -3,8 +3,8 @@ import { User } from './user.model';
 import { UserService } from './user.service';
 import { ValidationExceptionsFilter } from 'src/utils/validationExceptionsFilter';
 import { CreateUserDTO, UserDTO } from './user.dto';
-import { ApiResponse } from '@nestjs/swagger';
-
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+@ApiTags('Users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
