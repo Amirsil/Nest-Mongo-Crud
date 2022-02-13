@@ -5,7 +5,7 @@ import { Type } from 'class-transformer';
 export class CreateCatDTO {
     @ApiProperty()
     @IsNotEmpty()
-    @MaxLength(256)
+    @MaxLength(50)
     public name: string;
 
     @ApiProperty()

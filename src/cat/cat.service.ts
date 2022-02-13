@@ -42,16 +42,19 @@ export class CatService extends BaseService<Cat, CreateCatDTO> {
   }
 
   async create(createCatDTO: CreateCatDTO): Promise<Cat> {
+    await super.validateNameIsLegal(createCatDTO.name);
     await super.validateNoDuplicates(createCatDTO.name);
     return await this.catModel.create(createCatDTO);
   }
 
   async updateByName(name: string, createCatDTO: CreateCatDTO): Promise<Cat> {
+    await super.validateNameIsLegal(createCatDTO.name);
     await super.validateExists(name);
     return await this.catModel.findOneAndUpdate({ name }, createCatDTO);
   }
 
   async removeByName(name: string): Promise<Cat> {
+    await super.validateNameIsLegal(name);
     await super.validateExists(name);
     return await this.catModel.findOneAndDelete({ name });
   }

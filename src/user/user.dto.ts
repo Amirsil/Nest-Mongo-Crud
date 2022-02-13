@@ -5,7 +5,7 @@ import { CatDTO, CreateCatDTO } from "src/cat/cat.dto";
 export class CreateUserDTO {
     @ApiProperty()
     @IsNotEmpty()
-    @MaxLength(256)
+    @MaxLength(50)
     public name: string;
 
     @ApiProperty()

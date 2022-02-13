@@ -49,20 +49,23 @@ export class UserService extends BaseService<User, CreateUserDTO> {
   }
 
   async create(createUserDTO: CreateUserDTO): Promise<User> {
+    await super.validateNameIsLegal(createUserDTO.name);
     await super.validateNoDuplicates(createUserDTO.name);
 
     const user = await this.createUserFromDTO(createUserDTO);
     return await this.userModel.create(user);
   }
 
-  async updateByName(name: string, newCreateUserDTO: CreateUserDTO): Promise<User> {
+  async updateByName(name: string, createUserDTO: CreateUserDTO): Promise<User> {
+    await super.validateNameIsLegal(createUserDTO.name);
     await super.validateExists(name);
 
-    const newUser = await this.createUserFromDTO(newCreateUserDTO);
+    const newUser = await this.createUserFromDTO(createUserDTO);
     return await this.userModel.findOneAndUpdate({ name }, newUser);
   }
 
   async removeByName(name: string): Promise<User> {
+    await super.validateNameIsLegal(name);
     await super.validateExists(name);
     return await this.userModel.findOneAndRemove({ name });
   }

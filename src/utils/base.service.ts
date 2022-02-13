@@ -25,4 +25,12 @@ export abstract class BaseService<T, DTO> {
     }
     throw new ForbiddenException(`${name} already exists`);
   }
+
+  protected async validateNameIsLegal(name: string): Promise<void> {
+    const illegalCharacters = /[ `!@#$%^&*()+\=\[\]{};':"\\|,.<>\/?~]/;
+
+    if (illegalCharacters.test(name) ) {
+      throw new ForbiddenException(`name contains illegal characters`)
+    }
+  }
 }
