@@ -12,24 +12,27 @@ export class CatService extends BaseService<Cat, CreateCatDTO> {
     private readonly catModel: ReturnModelType<typeof Cat>) { super() }
 
   async findAll(): Promise<Cat[] | null> {
-    return await (await this.catModel
+    return await this.catModel
       .find()
-      .exec())
-      .map((cat) => cat.toJSON());
+      .exec();
   }
 
   async findByName(name: string): Promise<Cat> {
-    const cat = await this.catModel.findOne({ name });
+    const cat = await this.catModel
+      .findOne({ name })
+      .exec();
 
     if (!cat) {
       throw new NotFoundException(`Cat ${name} not found`);
     }
 
-    return cat.toJSON();
+    return cat;
   }
 
   async findByNames(names: string[]): Promise<Cat[] | null> {
-    const cats = await this.catModel.find({ name: { $in: names } });
+    const cats = await this.catModel
+      .find({ name: { $in: names } })
+      .exec();
 
     const catNames = cats.map(({ name }) => name);
     names.forEach(catName => {
@@ -50,12 +53,16 @@ export class CatService extends BaseService<Cat, CreateCatDTO> {
   async updateByName(name: string, createCatDTO: CreateCatDTO): Promise<Cat> {
     await super.validateNameIsLegal(createCatDTO.name);
     await super.validateExists(name);
-    return await this.catModel.findOneAndUpdate({ name }, createCatDTO);
+    return await this.catModel
+      .findOneAndUpdate({ name }, createCatDTO)
+      .exec();
   }
 
   async removeByName(name: string): Promise<Cat> {
     await super.validateNameIsLegal(name);
     await super.validateExists(name);
-    return await this.catModel.findOneAndDelete({ name });
+    return await this.catModel
+      .findOneAndDelete({ name })
+      .exec();
   }
 }

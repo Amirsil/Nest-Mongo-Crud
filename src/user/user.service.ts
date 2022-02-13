@@ -16,27 +16,29 @@ export class UserService extends BaseService<User, CreateUserDTO> {
 
 
   async findAll(): Promise<User[] | null> {
-    return (await this.userModel
+    return await this.userModel
       .find()
       .populate({ path: 'cats', model: Cat })
-      .exec())
-      .map((user) => user.toJSON());
+      .exec();
   }
 
   async findByName(name: string): Promise<User> {
     const user = await this.userModel
       .findOne({ name })
-      .populate({ path: 'cats', model: Cat });
+      .populate({ path: 'cats', model: Cat })
+      .exec();
 
     if (!user) {
       throw new NotFoundException(`User ${name} not found`, name);
     }
 
-    return user.toJSON();
+    return user;
   }
 
   async findByNames(names: string[]): Promise<User[] | null> {
-    const users = await this.userModel.find({ name: { $in: names } });
+    const users = await this.userModel
+      .find({ name: { $in: names } })
+      .exec();
 
     const userNames = users.map(({ name }) => name);
     names.forEach(userName => {
@@ -61,13 +63,17 @@ export class UserService extends BaseService<User, CreateUserDTO> {
     await super.validateExists(name);
 
     const newUser = await this.createUserFromDTO(createUserDTO);
-    return await this.userModel.findOneAndUpdate({ name }, newUser);
+    return await this.userModel
+      .findOneAndUpdate({ name }, newUser)
+      .exec()
   }
 
   async removeByName(name: string): Promise<User> {
     await super.validateNameIsLegal(name);
     await super.validateExists(name);
-    return await this.userModel.findOneAndRemove({ name });
+    return await this.userModel
+      .findOneAndRemove({ name })
+      .exec();
   }
 
   private async createUserFromDTO(createUserDTO: CreateUserDTO): Promise<User> {

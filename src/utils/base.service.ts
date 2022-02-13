@@ -1,13 +1,13 @@
 import { ForbiddenException, Injectable } from "@nestjs/common";
 
 @Injectable()
-export abstract class BaseService<T, DTO> {
-  abstract findAll(): Promise<T[] | null>;
-  abstract findByName(name: string): Promise<T>;
-  abstract findByNames(names: string[]): Promise<T[] | null>;
-  abstract create(dto: DTO): Promise<T>;
-  abstract updateByName(name: string, dto: DTO): Promise<T>;
-  abstract removeByName(name: string): Promise<T>
+export abstract class BaseService<Model, CreateDTO> {
+  abstract findAll(): Promise<Model[] | null>;
+  abstract findByName(name: string): Promise<Model>;
+  abstract findByNames(names: string[]): Promise<Model[] | null>;
+  abstract create(createDTO: CreateDTO): Promise<Model>;
+  abstract updateByName(name: string, createDTO: CreateDTO): Promise<Model>;
+  abstract removeByName(name: string): Promise<Model>
 
   protected async validateExists(name: string): Promise<void> {
     try {
