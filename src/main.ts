@@ -19,16 +19,14 @@ async function bootstrap() {
 
 function configureSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
-    .setTitle('CRUD example')
-    .setDescription('The API description')
+    .setTitle('Basic CRUD')
+    .setDescription('CRUD API for users and cats')
     .setVersion('1.0')
-    .addTag('Cats')
-    .addTag('Users')
     .build();
 
-    const options: SwaggerDocumentOptions = {
-      include: [CatsModule, UserModule],
-    };
+  const options: SwaggerDocumentOptions = {
+    include: [CatsModule, UserModule],
+  };
 
   const document = SwaggerModule.createDocument(app, config, options);
   SwaggerModule.setup('api', app, document);
