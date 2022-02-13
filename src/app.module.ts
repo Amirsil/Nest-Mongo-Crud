@@ -4,7 +4,7 @@ import { TypegooseModule } from 'nestjs-typegoose';
 import { AppController } from './app.controller';
 import { CatsModule } from './cat/cat.module';
 import { UserModule } from './user/user.module'
-import { ValidationExceptionsFilter } from './utils/validationExceptionsFilter';
+import { ValidationExceptionsFilter } from './utils/validation.exceptionfilter';
 @Module({
   imports: [TypegooseModule.forRoot('mongodb://localhost:27017/nest', {
   }),

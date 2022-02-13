@@ -1,6 +1,6 @@
-import { Catch, ArgumentsHost, HttpException, HttpStatus, ExceptionFilter } from '@nestjs/common';
-import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
-import { Response } from 'express';
+import { Catch, ArgumentsHost, HttpStatus, ExceptionFilter } from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
+
 @Catch()
 export class ValidationExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) { }

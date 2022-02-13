@@ -11,7 +11,7 @@ export class CatService extends BaseService<Cat, CreateCatDTO> {
     @InjectModel(Cat)
     private readonly catModel: ReturnModelType<typeof Cat>) { super() }
 
-  async findAll(): Promise<Cat[] | null> {
+  async findAll(): Promise<Cat[]> {
     return await this.catModel
       .find()
       .exec();
@@ -29,7 +29,7 @@ export class CatService extends BaseService<Cat, CreateCatDTO> {
     return cat;
   }
 
-  async findByNames(names: string[]): Promise<Cat[] | null> {
+  async findByNames(names: string[]): Promise<Cat[]> {
     const cats = await this.catModel
       .find({ name: { $in: names } })
       .exec();
@@ -58,10 +58,10 @@ export class CatService extends BaseService<Cat, CreateCatDTO> {
       .exec();
   }
 
-  async removeByName(name: string): Promise<Cat> {
+  async removeByName(name: string): Promise<void> {
     await super.validateNameIsLegal(name);
     await super.validateExists(name);
-    return await this.catModel
+    await this.catModel
       .findOneAndDelete({ name })
       .exec();
   }

@@ -1,4 +1,4 @@
-import { modelOptions, prop, Ref } from '@typegoose/typegoose';
+import { prop, Ref } from '@typegoose/typegoose';
 import { Cat } from 'src/cat/cat.model';
 
 

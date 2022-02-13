@@ -15,7 +15,7 @@ export class UserService extends BaseService<User, CreateUserDTO> {
   ) { super() }
 
 
-  async findAll(): Promise<User[] | null> {
+  async findAll(): Promise<User[]> {
     return await this.userModel
       .find()
       .populate({ path: 'cats', model: Cat })
@@ -35,7 +35,7 @@ export class UserService extends BaseService<User, CreateUserDTO> {
     return user;
   }
 
-  async findByNames(names: string[]): Promise<User[] | null> {
+  async findByNames(names: string[]): Promise<User[]> {
     const users = await this.userModel
       .find({ name: { $in: names } })
       .populate({ path: 'cats', model: Cat })
@@ -56,7 +56,9 @@ export class UserService extends BaseService<User, CreateUserDTO> {
     await super.validateNoDuplicates(createUserDTO.name);
 
     const user = await this.createUserFromDTO(createUserDTO);
-    return await this.userModel.create(user);
+    return (await this.userModel
+      .create(user))
+      .populate('cats');
   }
 
   async updateByName(name: string, createUserDTO: CreateUserDTO): Promise<User> {
@@ -66,13 +68,14 @@ export class UserService extends BaseService<User, CreateUserDTO> {
     const newUser = await this.createUserFromDTO(createUserDTO);
     return await this.userModel
       .findOneAndUpdate({ name }, newUser)
+      .populate({ path: 'cats', model: Cat })
       .exec()
   }
 
-  async removeByName(name: string): Promise<User> {
+  async removeByName(name: string): Promise<void> {
     await super.validateNameIsLegal(name);
     await super.validateExists(name);
-    return await this.userModel
+    await this.userModel
       .findOneAndRemove({ name })
       .exec();
   }

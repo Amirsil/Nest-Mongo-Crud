@@ -1,10 +1,10 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder, OpenAPIObject, SwaggerDocumentOptions } from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { CatsModule } from './cat/cat.module';
 import { UserModule } from './user/user.module';
-import { ValidationExceptionsFilter } from './utils/validationExceptionsFilter';
+import { ValidationExceptionsFilter } from './utils/validation.exceptionfilter';
 
 
 async function bootstrap() {
@@ -26,6 +26,7 @@ function configureSwagger(app: INestApplication): void {
 
   const options: SwaggerDocumentOptions = {
     include: [CatsModule, UserModule],
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey
   };
 
   const document = SwaggerModule.createDocument(app, config, options);

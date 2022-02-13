@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsNumberString, MaxLength, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, MaxLength, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateCatDTO {

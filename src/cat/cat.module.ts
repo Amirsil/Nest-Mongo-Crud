@@ -3,13 +3,11 @@ import { TypegooseModule } from "nestjs-typegoose";
 import { Cat } from "./cat.model";
 import { CatController } from "./cat.controller";
 import { CatService } from "./cat.service";
-import { UserService } from "src/user/user.service";
-import { User } from "src/user/user.model";
 
 @Module({
-  imports: [TypegooseModule.forFeature([Cat]), TypegooseModule.forFeature([User])],
+  imports: [TypegooseModule.forFeature([Cat])],
   controllers: [CatController],
-  providers: [CatService, UserService],
+  providers: [CatService],
   exports: [CatService]
 })
-export class CatsModule {}
+export class CatsModule { }

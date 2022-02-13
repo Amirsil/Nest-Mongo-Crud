@@ -10,6 +10,6 @@ import { UserService } from './user.service';
   imports: [TypegooseModule.forFeature([User]), TypegooseModule.forFeature([Cat])],
   controllers: [UserController],
   providers: [UserService, CatService],
-  exports: [UserService]
 })
+
 export class UserModule {}

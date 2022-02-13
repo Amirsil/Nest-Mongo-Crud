@@ -1,4 +1,4 @@
-import { modelOptions, prop } from "@typegoose/typegoose";
+import { prop } from "@typegoose/typegoose";
 
 export class Cat {
   public _id?: string;

@@ -1,6 +1,6 @@
 import { ApiProperty, getSchemaPath } from "@nestjs/swagger";
 import { IsNotEmpty, MaxLength } from "class-validator";
-import { CatDTO, CreateCatDTO } from "src/cat/cat.dto";
+import { CatDTO } from "src/cat/cat.dto";
 
 export class CreateUserDTO {
     @ApiProperty()
