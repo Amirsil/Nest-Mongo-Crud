@@ -4,6 +4,7 @@ import { CatService } from "./cat.service";
 import { ValidationExceptionsFilter } from "src/utils/validationExceptionsFilter";
 import { CatDTO, CreateCatDTO } from "./cat.dto";
 import { ApiResponse } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 
 @Controller('cats')
 export class CatController {
@@ -19,6 +20,12 @@ export class CatController {
   @Get(':name')
   async getCatByName(@Param('name') name: string): Promise<Cat> {
     return await this.catService.findByName(name)
+  }
+
+  @ApiResponse({ type: [CatDTO] })
+  @Get('names/:names')
+  async getCatsByNames(@Param('names') names: string[]): Promise<Cat[] | undefined> {
+    return await this.catService.findByNames(String(names).split(','));
   }
 
   @UseFilters(ValidationExceptionsFilter)

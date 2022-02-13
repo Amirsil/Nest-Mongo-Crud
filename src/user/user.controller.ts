@@ -21,6 +21,12 @@ export class UserController {
     return await this.userService.findByName(name)
   }
 
+  @ApiResponse({ type: [UserDTO] })
+  @Get('names/:names')
+  async getUsersByNames(@Param('names') names: string[]): Promise<User[] | undefined> {
+    return await this.userService.findByNames(String(names).split(','));
+  }
+
   @UseFilters(ValidationExceptionsFilter)
   @Post()
   async create(@Body() createUserDTO: CreateUserDTO) {

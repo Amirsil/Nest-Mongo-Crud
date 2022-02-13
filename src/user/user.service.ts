@@ -38,12 +38,13 @@ export class UserService extends BaseService<User, CreateUserDTO> {
   async findByNames(names: string[]): Promise<User[] | null> {
     const users = await this.userModel
       .find({ name: { $in: names } })
+      .populate({ path: 'cats', model: Cat })
       .exec();
 
     const userNames = users.map(({ name }) => name);
     names.forEach(userName => {
       if (!userNames.includes(userName)) {
-        throw new NotFoundException(`Cat ${userName} not found`);
+        throw new NotFoundException(`User ${userName} not found`);
       }
     })
 
