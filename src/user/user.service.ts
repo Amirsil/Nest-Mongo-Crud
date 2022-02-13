@@ -45,7 +45,7 @@ export class UserService extends BaseService<User, CreateUserDTO> {
       }
     })
 
-    return await this.userModel.find({ name: { $in: names } });
+    return users;
   }
 
   async create(createUserDTO: CreateUserDTO): Promise<User> {
