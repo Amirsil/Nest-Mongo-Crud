@@ -63,6 +63,7 @@ export class UserService extends BaseService<User, CreateUserDTO> {
   }
 
   async removeByName(name: string): Promise<User> {
+    await super.validateExists(name);
     return await this.userModel.findOneAndRemove({ name });
   }
 
