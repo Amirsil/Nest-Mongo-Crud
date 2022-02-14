@@ -1,10 +1,12 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters, NotFoundException } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters, NotFoundException, UseInterceptors, UploadedFile } from "@nestjs/common";
 import { Cat } from "./cat.model";
 import { CatService } from "./cat.service";
 import { ValidationExceptionsFilter } from "src/utils/validation.exceptionfilter";
 import { CatDTO, CreateCatDTO } from "./cat.dto";
-import { ApiResponse, ApiTags } from "@nestjs/swagger";
-
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { diskStorage } from "multer";
+import { readFileSync, writeFileSync } from 'fs';
 @ApiTags('Cats')
 @Controller('cats')
 export class CatController {
@@ -30,6 +32,7 @@ export class CatController {
 
   @ApiResponse({ type: CatDTO })
   @UseFilters(ValidationExceptionsFilter)
+  @ApiConsumes('multipart/form-data')
   @Post()
   async createCat(@Body() createCatDTO: CreateCatDTO): Promise<Cat> {
     return await this.catService.create(createCatDTO);
@@ -47,5 +50,26 @@ export class CatController {
   async removeCatByName(@Param('name') name: string) {
     await this.catService.removeByName(name);
     return 'OK';
+  }
+
+  @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        filename: { type: 'string' },
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file', {
+    storage: diskStorage({ destination: './uploads' })
+  }))
+  uploadFile2(@UploadedFile('file') file: Express.Multer.File) {
+    return readFileSync(`./uploads/${file.filename}`).toString()
   }
 }
