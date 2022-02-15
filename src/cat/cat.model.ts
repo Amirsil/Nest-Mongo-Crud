@@ -10,5 +10,5 @@ export class Cat {
   public tailLength: number;
 
   @prop()
-  public imagePath: string;
+  public image?: string;
 }

@@ -1,16 +1,19 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters, NotFoundException, UseInterceptors, UploadedFile } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters, NotFoundException, UseInterceptors, UploadedFile, Res } from "@nestjs/common";
 import { Cat } from "./cat.model";
 import { CatService } from "./cat.service";
 import { ValidationExceptionsFilter } from "src/utils/validation.exceptionfilter";
-import { CatDTO, CreateCatDTO } from "./cat.dto";
-import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { CatDTO, CreateCatDTO, UploadCatSchema } from "./cat.dto";
+import { ApiBadRequestResponse, ApiBody, ApiConsumes, ApiResponse, ApiTags, getSchemaPath } from "@nestjs/swagger";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { readFileSync, writeFileSync } from 'fs';
+import { FilesService, GridFsStorageConfig } from "src/files/file.service";
 @ApiTags('Cats')
 @Controller('cats')
 export class CatController {
-  constructor(private readonly catService: CatService) { }
+  constructor(
+    private readonly catService: CatService,
+    private readonly fileService: FilesService) { }
 
   @ApiResponse({ type: [CatDTO] })
   @Get()
@@ -24,6 +27,11 @@ export class CatController {
     return await this.catService.findByName(name)
   }
 
+  @Get(':name/image')
+  async getCatImage(@Param('name') name: string, @Res() res) {
+    return this.catService.getCatImage(name, res);
+  }
+
   @ApiResponse({ type: [CatDTO] })
   @Get('names/:names')
   async getCatsByNames(@Param('names') names: string[]): Promise<Cat[]> {
@@ -33,8 +41,14 @@ export class CatController {
   @ApiResponse({ type: CatDTO })
   @UseFilters(ValidationExceptionsFilter)
   @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file', new GridFsStorageConfig().createMulterOptions()))
+  @ApiBody(UploadCatSchema)
   @Post()
-  async createCat(@Body() createCatDTO: CreateCatDTO): Promise<Cat> {
+  async createCat(@Body() body, @UploadedFile('file') image: Express.Multer.File): Promise<Cat> {
+    const createCatDTO: CreateCatDTO = {
+      ...JSON.parse(body.cat)
+      , image: image?.id
+    };
     return await this.catService.create(createCatDTO);
   }
 
@@ -50,26 +64,5 @@ export class CatController {
   async removeCatByName(@Param('name') name: string) {
     await this.catService.removeByName(name);
     return 'OK';
-  }
-
-  @Post('upload')
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        filename: { type: 'string' },
-        file: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
-  @UseInterceptors(FileInterceptor('file', {
-    storage: diskStorage({ destination: './uploads' })
-  }))
-  uploadFile2(@UploadedFile('file') file: Express.Multer.File) {
-    return readFileSync(`./uploads/${file.filename}`).toString()
   }
 }
