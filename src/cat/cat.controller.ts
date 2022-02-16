@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Put, Delete, UseFilters, NotFoundEx
 import { Cat } from "./cat.model";
 import { CatService } from "./cat.service";
 import { ValidationExceptionsFilter } from "src/utils/validation.exceptionfilter";
-import { CatDTO, CreateCatDTO, UploadCatSchema } from "./cat.dto";
+import { CatDTO, CreateCatDTO } from "./cat.dto";
 import { ApiBadRequestResponse, ApiBody, ApiConsumes, ApiResponse, ApiTags, getSchemaPath } from "@nestjs/swagger";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
@@ -28,7 +28,7 @@ export class CatController {
   }
 
   @Get(':name/image')
-  async getCatImage(@Param('name') name: string, @Res() res) {
+  async getCatImage(@Param('name') name: string, @Res() res): Promise<string> {
     return this.catService.getCatImage(name, res);
   }
 
@@ -41,14 +41,11 @@ export class CatController {
   @ApiResponse({ type: CatDTO })
   @UseFilters(ValidationExceptionsFilter)
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file', new GridFsStorageConfig().createMulterOptions()))
-  @ApiBody(UploadCatSchema)
+  @UseInterceptors(FileInterceptor('image', new GridFsStorageConfig().createMulterOptions()))
+  @ApiBody({ type: CreateCatDTO })
   @Post()
-  async createCat(@Body() body, @UploadedFile('file') image: Express.Multer.File): Promise<Cat> {
-    const createCatDTO: CreateCatDTO = {
-      ...JSON.parse(body.cat)
-      , image: image?.id
-    };
+  async createCat(@UploadedFile('file') image: Express.Multer.File, @Body() createCatDTO: CreateCatDTO): Promise<Cat> {
+    createCatDTO.image = image?.id;
     return await this.catService.create(createCatDTO);
   }
 

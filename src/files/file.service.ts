@@ -15,7 +15,6 @@ export class GridFsStorageConfig implements MulterOptionsFactory {
         this.gridFsStorage = new GridFsStorage.GridFsStorage({
             url: MONGO_URL,
             file: (req, file) => {
-                console.log(file)
                 return file
             }
         });

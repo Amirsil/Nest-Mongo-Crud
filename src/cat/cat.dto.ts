@@ -14,7 +14,11 @@ export class CreateCatDTO {
     @Min(1)
     public tailLength: number;
 
-    @IsNumber()
+    @ApiProperty({
+        type: 'string',
+        format: 'binary',
+        required: false
+    })
     public image?: string;
 
 }
@@ -25,25 +29,4 @@ export class CatDTO {
 
     @ApiProperty()
     public tailLength: number;
-
-    @ApiProperty({
-        type: 'string',
-        format: 'binary'
-    })
-
-    public image: string;
-}
-
-export const UploadCatSchema = {
-    schema: {
-        type: 'object',
-        properties: {
-            cat: { $ref: getSchemaPath(CreateCatDTO) },
-            file: {
-                type: 'string',
-                format: 'binary',
-            },
-        },
-
-    }
 }
