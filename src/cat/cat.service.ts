@@ -5,7 +5,7 @@ import { Cat } from "src/cat/cat.model";
 import { FilesService } from "src/files/file.service";
 import { BaseService } from "src/utils/base.service";
 import { CreateCatDTO } from "./cat.dto";
-
+import { Readable } from 'stream';
 @Injectable()
 export class CatService extends BaseService<Cat, CreateCatDTO> {
   constructor(
@@ -49,12 +49,26 @@ export class CatService extends BaseService<Cat, CreateCatDTO> {
   async create(createCatDTO: CreateCatDTO): Promise<Cat> {
     await super.validateNameIsLegal(createCatDTO.name);
     await super.validateNoDuplicates(createCatDTO.name);
+
+    if (createCatDTO.image) {
+      const file = await this.fileService.writeFile(createCatDTO.image)
+      createCatDTO.image = String(file._id)
+    }
+    
     return await this.catModel.create(createCatDTO);
   }
 
   async updateByName(name: string, createCatDTO: CreateCatDTO): Promise<Cat> {
     await super.validateNameIsLegal(createCatDTO.name);
     await super.validateExists(name);
+
+    if (createCatDTO.image) {
+      const file = await this.fileService.writeFile(createCatDTO.image)
+      createCatDTO.image = String(file._id)
+    } else {
+      delete createCatDTO.image
+    }
+    
     return await this.catModel
       .findOneAndUpdate({ name }, createCatDTO)
       .exec();
@@ -82,3 +96,4 @@ export class CatService extends BaseService<Cat, CreateCatDTO> {
     return filestream.pipe(res)
   }
 }
+

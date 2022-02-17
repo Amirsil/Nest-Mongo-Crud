@@ -41,19 +41,23 @@ export class CatController {
   @ApiResponse({ type: CatDTO })
   @UseFilters(ValidationExceptionsFilter)
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('image', new GridFsStorageConfig().createMulterOptions()))
+  @UseInterceptors(FileInterceptor('image'))
   @ApiBody({ type: CreateCatDTO })
   @Post()
-  async createCat(@UploadedFile('file') image: Express.Multer.File, @Body() createCatDTO: CreateCatDTO): Promise<Cat> {
-    createCatDTO.image = image?.id;
+  async createCat(@UploadedFile('file') image, @Body() createCatDTO: CreateCatDTO): Promise<Cat> {
+    createCatDTO.image = image;
     return await this.catService.create(createCatDTO);
   }
 
   @ApiResponse({ type: CatDTO })
   @UseFilters(ValidationExceptionsFilter)
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image'))
+  @ApiBody({ type: CreateCatDTO })
   @Put(':name')
-  async updateCatByName(@Param('name') name: string, @Body() newCreateCatDTO: CreateCatDTO): Promise<Cat> {
-    return await this.catService.updateByName(name, newCreateCatDTO);
+  async updateCatByName(@Param('name') name: string, @Body() createCatDTO: CreateCatDTO, @UploadedFile('file') image): Promise<Cat> {
+    createCatDTO.image = image;
+    return await this.catService.updateByName(name, createCatDTO);
   }
 
   @UseFilters(ValidationExceptionsFilter)

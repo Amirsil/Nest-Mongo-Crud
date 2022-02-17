@@ -21,6 +21,8 @@ export class FileInfo {
     @ApiProperty()
     @Expose()
     contentType: string;
+    
+    id: string;
 }
 
 export class FileResponse {
