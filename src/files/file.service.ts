@@ -10,23 +10,6 @@ import { Readable } from 'stream';
 const MONGO_URL = 'mongodb://localhost:27017/nest'
 
 @Injectable()
-export class GridFsStorageConfig implements MulterOptionsFactory {
-    gridFsStorage;
-    constructor() {
-        this.gridFsStorage = new GridFsStorage.GridFsStorage({
-            url: MONGO_URL,
-            file: (req, file) => {
-                return file
-            }
-        });
-    }
-
-    public createMulterOptions(): MulterModuleOptions {
-        return { storage: this.gridFsStorage };
-    }
-}
-
-@Injectable()
 export class FilesService {
     private fileModel: MongoGridFS;
 
